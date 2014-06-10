@@ -6,6 +6,7 @@ import spray.can.Http
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
+import scala.util.Properties
 
 object Boot extends App {
 
@@ -16,6 +17,9 @@ object Boot extends App {
   val service = system.actorOf(Props[MyServiceActor], "demo-service")
 
   implicit val timeout = Timeout(5.seconds)
+  
+  val port = Properties.envOrElse("PORT", "8080").toInt
+  
   // start a new HTTP server on port 8080 with our service actor as the handler
-  IO(Http) ? Http.Bind(service, interface = "localhost", port = 8080)
+  IO(Http) ? Http.Bind(service, interface = "localhost", port = port)
 }
